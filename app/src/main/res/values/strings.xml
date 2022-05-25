@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">DownloadDemo</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="download_fragment">Download Fragment</string>
+    <string name="no_data">NO DATA</string>
+    <string name="download">DOWNLOAD</string>
+    <string name="please_wait">Please wait</string>
+    <string name="error_http">ERROR HTTP CONNECTION</string>
+
+</resources>
