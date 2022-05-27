@@ -39,7 +39,7 @@ class ResourceApiService {
         }
     }
 
-    fun getListResponse(callback: Callback, urlList: List<String>) {
+    fun getListResponse(callback: Callback, urlList: MutableSet<String>) {
         Log.i("DOWNLOAD", urlList.size.toString())
         for(url in urlList)
         {

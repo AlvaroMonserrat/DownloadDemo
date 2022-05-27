@@ -1,6 +1,7 @@
 package com.rrat.downloaddemo
 
 import android.app.Dialog
+import android.app.ProgressDialog
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -11,7 +12,11 @@ import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.snackbar.Snackbar
 import com.rrat.downloaddemo.databinding.FragmentDownloadBinding
+import com.rrat.downloaddemo.utils.Constants
 import com.rrat.downloaddemo.viewmodel.DownLoadViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -32,7 +37,7 @@ class DownloadFragment : Fragment() {
     private var param2: String? = null
 
     private lateinit var downLoadViewModel: DownLoadViewModel
-    private lateinit var progressDialog: DialogFragment
+    private lateinit var progressDialog: ProgressDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,16 +58,30 @@ class DownloadFragment : Fragment() {
         downLoadViewModel = ViewModelProvider(this).get(DownLoadViewModel::class.java)
 
         binding.tvAudioFiles.text = resources.getString(R.string.no_data)
-        binding.btnDownload.setOnClickListener { view -> downloadAudios(view) }
+        binding.btnDownload.setOnClickListener { view -> downloadMultiplesFiles(view) }
 
+
+        downLoadViewModel.addForDownload(Constants.URL_RECURSOS, Constants.DIRECTORIO_RECURSOS)
+        downLoadViewModel.addForDownload(Constants.URL_IMAGENES_DICCIONARIO, Constants.DIRECTORIO_IMAGENES_DICCIONARIO)
+        downLoadViewModel.addForDownload(Constants.URL_IMAGENES_ASESOR, Constants.DIRECTORIO_IMAGENES_ASESOR)
+        downLoadViewModel.addForDownload(Constants.URL_RECURSOS_AUDIO, Constants.DIRECTORIO_RECURSOS_AUDIO)
+        downLoadViewModel.addForDownload(Constants.URL_AUDIO_DICCIONARIO, Constants.DIRECTORIO_AUDIO_DICCIONARIO)
+        downLoadViewModel.addForDownload(Constants.URL_AUDIO_ASESOR, Constants.DIRECTORIO_AUDIO_ASESOR)
+
+        progressDialog = ProgressDialog(activity)
         observeDownloadUrl()
 
         return binding.root
     }
 
-    private fun downloadAudios(view: View)
+    private fun downloadMultiplesFiles(view: View)
     {
-        downLoadViewModel.getResponse("https://agroecology.cl/audio_diccionario/")
+        progressDialog.show()
+
+        CoroutineScope(Dispatchers.IO).launch {
+            downLoadViewModel.startDownload()
+        }
+        //downLoadViewModel.getResponse("https://agroecology.cl/audio_diccionario/")
         Snackbar.make(view, "Downloading...", Snackbar.LENGTH_LONG)
             .setAction("Action", null).show()
 
@@ -77,11 +96,15 @@ class DownloadFragment : Fragment() {
             isUrlLoaded->
             if(isUrlLoaded)
             {
-                //progressDialog?.dismiss()
-                binding.tvAudioFiles.text = downLoadViewModel.listName.toString()
+
+                //progressDialog.dismiss()
+                //binding.tvAudioFiles.text = downLoadViewModel.listName.toString()
 
                 //DOWNLOAD FILES
-                context?.let { context-> downLoadViewModel.downloadFiles(context) }
+                CoroutineScope(Dispatchers.IO).launch {
+                    context?.let { context-> downLoadViewModel.downloadBatch(context) }
+                }
+
             }
         }
 
@@ -91,8 +114,19 @@ class DownloadFragment : Fragment() {
                 isUrlFailed->
             if(isUrlFailed)
             {
-                //progressDialog?.dismiss()
+                Log.i("DOWNLOAD", "DISMISS FAILED")
+                progressDialog.dismiss()
                 binding.tvAudioFiles.text = getString(R.string.error_http)
+            }
+        }
+
+        downLoadViewModel.isBatchLoaded.observe(viewLifecycleOwner)
+        {
+                isBatchLoaded->
+            if(isBatchLoaded)
+            {
+                Log.i("DOWNLOAD", "DISMISS SUCCESS")
+                progressDialog.dismiss()
             }
         }
 
