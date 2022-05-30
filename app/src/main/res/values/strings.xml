@@ -6,5 +6,11 @@
     <string name="download">DOWNLOAD</string>
     <string name="please_wait">Please wait</string>
     <string name="error_http">ERROR HTTP CONNECTION</string>
+    <string name="go_to_player">Go To Player</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="player_fragment">Player Fragment</string>
+    <string name="go_to_download">Go to Download</string>
+    <string name="play">Play</string>
 
 </resources>

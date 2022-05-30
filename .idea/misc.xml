@@ -6,7 +6,8 @@
         <entry key="..\:/CuantoCodigo/UITutorial/DownloadDemo/app/src/main/res/layout/activity_main.xml" value="0.2" />
         <entry key="..\:/CuantoCodigo/UITutorial/DownloadDemo/app/src/main/res/layout/content_main.xml" value="0.136" />
         <entry key="..\:/CuantoCodigo/UITutorial/DownloadDemo/app/src/main/res/layout/dialog_custom_progress.xml" value="0.264" />
-        <entry key="..\:/CuantoCodigo/UITutorial/DownloadDemo/app/src/main/res/layout/fragment_download.xml" value="0.144" />
+        <entry key="..\:/CuantoCodigo/UITutorial/DownloadDemo/app/src/main/res/layout/fragment_download.xml" value="0.264" />
+        <entry key="..\:/CuantoCodigo/UITutorial/DownloadDemo/app/src/main/res/layout/fragment_player.xml" value="0.3625" />
       </map>
     </option>
   </component>
