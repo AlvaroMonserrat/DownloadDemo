@@ -15,6 +15,9 @@
         <action
             android:id="@+id/action_downloadFragment_to_playerFragment"
             app:destination="@id/playerFragment" />
+        <action
+            android:id="@+id/action_downloadFragment_to_pdfFragment"
+            app:destination="@id/pdfFragment" />
     </fragment>
 
     <fragment
@@ -24,6 +27,15 @@
         tools:layout="@layout/fragment_player" >
         <action
             android:id="@+id/action_playerFragment_to_downloadFragment"
+            app:destination="@id/downloadFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/pdfFragment"
+        android:name="com.rrat.downloaddemo.PdfFragment"
+        android:label="fragment_pdf"
+        tools:layout="@layout/fragment_pdf" >
+        <action
+            android:id="@+id/action_pdfFragment_to_downloadFragment"
             app:destination="@id/downloadFragment" />
     </fragment>
 

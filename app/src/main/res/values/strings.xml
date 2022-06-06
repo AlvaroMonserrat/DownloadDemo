@@ -12,5 +12,8 @@
     <string name="player_fragment">Player Fragment</string>
     <string name="go_to_download">Go to Download</string>
     <string name="play">Play</string>
+    <string name="go_to_pdf">Go to PDF</string>
+    <string name="pdf_fragment">PDF fragment</string>
+    <string name="read_pdf">Read PDF</string>
 
 </resources>

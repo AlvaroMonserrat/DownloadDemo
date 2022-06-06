@@ -65,6 +65,10 @@ class DownloadFragment : Fragment() {
             findNavController().navigate(R.id.action_downloadFragment_to_playerFragment)
         }
 
+        binding.btnPdf.setOnClickListener {
+            findNavController().navigate(R.id.action_downloadFragment_to_pdfFragment)
+        }
+
     }
 
     private fun downloadMultiplesFiles(view: View)
