@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.rrat.downloaddemo.network.Batch
+import com.rrat.downloaddemo.network.LoadI
 import com.rrat.downloaddemo.network.ResourceApiService
 import okhttp3.Call
 import okhttp3.Callback
@@ -119,7 +120,7 @@ class DownLoadViewModel : ViewModel() {
 
     }
 
-    fun downloadBatch(context: Context) {
+    fun downloadBatch(context: Context, load: LoadI) {
         val contextWrapper = ContextWrapper(context)
         var countDownLatch: CountDownLatch
         isBatchLoaded.postValue(false)
@@ -162,14 +163,15 @@ class DownLoadViewModel : ViewModel() {
                                         //SAVE
                                         val newFile = File(localDir.absolutePath + "/" + name)
 
+                                        Log.i("DOWNLOAD", "Number OK: $countBatchDownload URL: $url path: ${localDir.absolutePath} name: $name")
                                         if(!newFile.exists())
                                         {
                                             val sink = Okio.buffer(Okio.sink(newFile))
                                             response.body()?.source()?.let { sink.writeAll(it) }
                                             sink.close()
                                         }
+                                        load.onSuccess(countBatchDownload, sizeBatch)
 
-                                        Log.i("DOWNLOAD", "Number OK: $countBatchDownload URL: $url path: ${localDir.absolutePath} name: $name")
 
                                         countBatchDownload +=1
                                         if(countBatchDownload == sizeBatch)

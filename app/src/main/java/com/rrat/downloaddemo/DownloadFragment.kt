@@ -1,21 +1,25 @@
 package com.rrat.downloaddemo
 
-import android.app.ProgressDialog
+import android.app.Dialog
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.rrat.downloaddemo.databinding.FragmentDownloadBinding
+import com.rrat.downloaddemo.network.LoadI
 import com.rrat.downloaddemo.utils.Constants
 import com.rrat.downloaddemo.viewmodel.DownLoadViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+
 
 /**
  * A simple [Fragment] subclass.
@@ -26,7 +30,8 @@ class DownloadFragment : Fragment() {
 
     private lateinit var binding: FragmentDownloadBinding
     private lateinit var downLoadViewModel: DownLoadViewModel
-    private lateinit var progressDialog: ProgressDialog
+    //private lateinit var progressDialog: ProgressBar
+    private lateinit var progressBarDownload: Dialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,7 +63,11 @@ class DownloadFragment : Fragment() {
         binding.tvAudioFiles.text = resources.getString(R.string.no_data)
         binding.btnDownload.setOnClickListener { v -> downloadMultiplesFiles(v) }
 
-        progressDialog = ProgressDialog(activity)
+        //progressDialog = ProgressBar(activity)
+        //val params = RelativeLayout.LayoutParams(100, 100)
+       // params.addRule(RelativeLayout.CENTER_IN_PARENT)
+        //binding.layoutDownloadFragment.addView(progressDialog, params)
+
         observeDownloadUrl()
 
         binding.btnPlayer.setOnClickListener {
@@ -73,11 +82,16 @@ class DownloadFragment : Fragment() {
 
     private fun downloadMultiplesFiles(view: View)
     {
-        progressDialog.show()
-
+        //progressDialog.visibility = View.VISIBLE
+        //binding.progressbar.visibility = View.VISIBLE
+        setupProgressBar()
+        showProgressbar()
         CoroutineScope(Dispatchers.IO).launch {
             downLoadViewModel.startDownload()
+
         }
+
+
         //downLoadViewModel.getResponse("https://agroecology.cl/audio_diccionario/")
         Snackbar.make(view, "Downloading...", Snackbar.LENGTH_LONG)
             .setAction("Action", null).show()
@@ -99,7 +113,17 @@ class DownloadFragment : Fragment() {
 
                 //DOWNLOAD FILES
                 CoroutineScope(Dispatchers.IO).launch {
-                    context?.let { context-> downLoadViewModel.downloadBatch(context) }
+                    context?.let { context-> downLoadViewModel.downloadBatch(context, object : LoadI{
+                        override fun onSuccess(count: Int, total:Int) {
+
+                            activity?.runOnUiThread {
+                                Log.i("DESCARGA: ", count.toString())
+                                updateProgressbar(count, total)
+                            }
+
+                        }
+
+                    }) }
                 }
 
             }
@@ -112,8 +136,10 @@ class DownloadFragment : Fragment() {
             if(isUrlFailed)
             {
                 Log.i("DOWNLOAD", "DISMISS FAILED")
-                progressDialog.dismiss()
+                //progressDialog.visibility = View.GONE
+                //binding.progressbar.visibility = View.GONE
                 binding.tvAudioFiles.text = getString(R.string.error_http)
+                hideProgressbar()
             }
         }
 
@@ -123,10 +149,37 @@ class DownloadFragment : Fragment() {
             if(isBatchLoaded)
             {
                 Log.i("DOWNLOAD", "DISMISS SUCCESS")
-                progressDialog.dismiss()
+                //progressDialog.visibility = View.GONE
+                //binding.progressbar.visibility = View.GONE
+                hideProgressbar()
             }
         }
 
     }
+
+    fun setupProgressBar()
+    {
+        progressBarDownload = context?.let { Dialog(it) }!!
+        progressBarDownload.setContentView(R.layout.dialog_custom_progress)
+    }
+
+    fun showProgressbar(){
+        progressBarDownload.show()
+    }
+
+    fun hideProgressbar()
+    {
+        progressBarDownload.dismiss()
+    }
+
+    fun updateProgressbar(count: Int, total: Int)
+    {
+        val progress = progressBarDownload.findViewById<ProgressBar>(R.id.progressBarHorizontal)
+        val textProgress = progressBarDownload.findViewById<TextView>(R.id.tv_progress)
+        progress.progress = count
+        textProgress.text = "$count / $total"
+
+    }
+
 
 }
